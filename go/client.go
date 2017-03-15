@@ -1,6 +1,7 @@
 package client
 
 import (
+	"fmt"
 	"net/http"
 	"net/url"
 	urlpath "path"
@@ -61,22 +62,26 @@ func (c *Client) Patch(path string, params map[string][]string) (*http.Response,
 
 func (c *Client) requestWithMethod(method HTTPMethod, path string, params map[string][]string) (*http.Response, error) {
 	vals := url.Values(params)
-	if method == GET {
-		req, err := http.NewRequest(string(GET), c.BaseURI, nil)
+	switch {
+	case method == GET || method == DELETE:
+		req, err := http.NewRequest(string(method), c.BaseURI, nil)
 		if err != nil {
 			return nil, err
 		}
 		req.URL.Path = urlpath.Join(req.URL.Path, path)
 		req.URL.RawQuery = vals.Encode()
 		return c.do(req)
+	case method == POST || method == PUT:
+		req, err := http.NewRequest(string(method), c.BaseURI, strings.NewReader(vals.Encode()))
+		if err != nil {
+			return nil, err
+		}
+		req.URL.Path = urlpath.Join(req.URL.Path, path)
+		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+		return c.do(req)
+	default:
+		return nil, fmt.Errorf("Unsupport method: %v", method)
 	}
-	req, err := http.NewRequest(string(method), c.BaseURI, strings.NewReader(vals.Encode()))
-	if err != nil {
-		return nil, err
-	}
-	req.URL.Path = urlpath.Join(req.URL.Path, path)
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	return c.do(req)
 }
 
 func (c *Client) do(req *http.Request) (*http.Response, error) {
