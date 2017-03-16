@@ -29,8 +29,8 @@ func TestGet(t *testing.T) {
 func TestPost(t *testing.T) {
 	client := NewClient(endpoint, timeout)
 	params := map[string][]string{
-		"name":  {"dognri"},
-		"email": {"dognri@domain.com"},
+		"name":  {"dongri"},
+		"email": {"dongri@domain.com"},
 	}
 	res, err := client.Post("/users", params)
 	if err != nil {
@@ -47,8 +47,8 @@ func TestPost(t *testing.T) {
 func TestPut(t *testing.T) {
 	client := NewClient(endpoint, timeout)
 	params := map[string][]string{
-		"name":  {"dognri"},
-		"email": {"dognri@domain.com"},
+		"name":  {"dongri"},
+		"email": {"dongri@domain.com"},
 	}
 	res, err := client.Put("/users", params)
 	if err != nil {
