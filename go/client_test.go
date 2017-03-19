@@ -9,7 +9,7 @@ const timeout = 90 //second
 const endpoint = "http://localhost:8080"
 
 func TestGet(t *testing.T) {
-	client := NewClient(endpoint, timeout)
+	client := NewClient(endpoint, nil, timeout)
 	params := map[string][]string{
 		"page": {"1"},
 	}
@@ -27,7 +27,10 @@ func TestGet(t *testing.T) {
 }
 
 func TestPost(t *testing.T) {
-	client := NewClient(endpoint, timeout)
+	header := map[string][]string{
+		"Content-Type": {"application/x-www-form-urlencoded"},
+	}
+	client := NewClient(endpoint, header, timeout)
 	params := map[string][]string{
 		"name":  {"dongri"},
 		"email": {"dongri@domain.com"},
@@ -45,7 +48,10 @@ func TestPost(t *testing.T) {
 }
 
 func TestPut(t *testing.T) {
-	client := NewClient(endpoint, timeout)
+	header := map[string][]string{
+		"Content-Type": {"application/x-www-form-urlencoded"},
+	}
+	client := NewClient(endpoint, header, timeout)
 	params := map[string][]string{
 		"name":  {"dongri"},
 		"email": {"dongri@domain.com"},
@@ -63,7 +69,7 @@ func TestPut(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	client := NewClient(endpoint, timeout)
+	client := NewClient(endpoint, nil, timeout)
 	params := map[string][]string{}
 	res, err := client.Delete("/users/1", params)
 	if err != nil {

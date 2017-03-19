@@ -24,13 +24,15 @@ const (
 // Client Struct
 type Client struct {
 	BaseURI string
+	Header  map[string][]string
 	Timeout int
 }
 
 // NewClient ...
-func NewClient(baseURI string, timeout int) *Client {
+func NewClient(baseURI string, header map[string][]string, timeout int) *Client {
 	return &Client{
 		BaseURI: baseURI,
+		Header:  header,
 		Timeout: timeout,
 	}
 }
@@ -70,6 +72,7 @@ func (c *Client) requestWithMethod(method HTTPMethod, path string, params map[st
 		}
 		req.URL.Path = urlpath.Join(req.URL.Path, path)
 		req.URL.RawQuery = vals.Encode()
+		req.Header = c.Header
 		return c.do(req)
 	case method == POST || method == PUT:
 		req, err := http.NewRequest(string(method), c.BaseURI, strings.NewReader(vals.Encode()))
@@ -77,7 +80,7 @@ func (c *Client) requestWithMethod(method HTTPMethod, path string, params map[st
 			return nil, err
 		}
 		req.URL.Path = urlpath.Join(req.URL.Path, path)
-		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+		req.Header = c.Header
 		return c.do(req)
 	default:
 		return nil, fmt.Errorf("Unsupport method: %v", method)
