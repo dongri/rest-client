@@ -1,0 +1,10 @@
+{
+    "dependencies": {
+        "github.com/pressly/chi": {
+            "branch": "master"
+        },
+        "github.com/unrolled/render": {
+            "branch": "v1"
+        }
+    }
+}

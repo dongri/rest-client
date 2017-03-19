@@ -1,0 +1,21 @@
+{
+    "memo": "",
+    "projects": [
+        {
+            "name": "github.com/pressly/chi",
+            "branch": "master",
+            "revision": "08a4f980e3f489687965541f6f6bd8436df13784",
+            "packages": [
+                "."
+            ]
+        },
+        {
+            "name": "github.com/unrolled/render",
+            "branch": "v1",
+            "revision": "526faf80cd4b305bb8134abea8d20d5ced74faa6",
+            "packages": [
+                "."
+            ]
+        }
+    ]
+}
