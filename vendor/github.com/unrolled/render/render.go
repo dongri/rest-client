@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 )
 
 const (
@@ -86,6 +87,8 @@ type Options struct {
 	RequireBlocks bool
 	// Disables automatic rendering of http.StatusInternalServerError when an error occurs. Default is false.
 	DisableHTTPErrorRendering bool
+	// Enables using partials without the current filename suffix which allows use of the same template in multiple files. e.g {{ partial "carosuel" }} inside the home template will match carosel-home or carosel.
+	RenderPartialsWithoutPrefix bool
 }
 
 // HTMLOptions is a struct for overriding some rendering Options for specific HTML call.
@@ -100,6 +103,7 @@ type Render struct {
 	// Customize Secure with an Options struct.
 	opt             Options
 	templates       *template.Template
+	templatesLk     sync.Mutex
 	compiledCharset string
 }
 
@@ -266,6 +270,9 @@ func (r *Render) addLayoutFuncs(name string, binding interface{}) {
 		"block": func(partialName string) (template.HTML, error) {
 			log.Print("Render's `block` implementation is now depericated. Use `partial` as a drop in replacement.")
 			fullPartialName := fmt.Sprintf("%s-%s", partialName, name)
+			if r.TemplateLookup(fullPartialName) == nil && r.opt.RenderPartialsWithoutPrefix {
+				fullPartialName = partialName
+			}
 			if r.opt.RequireBlocks || r.TemplateLookup(fullPartialName) != nil {
 				buf, err := r.execute(fullPartialName, binding)
 				// Return safe HTML here since we are rendering our own template.
@@ -275,6 +282,9 @@ func (r *Render) addLayoutFuncs(name string, binding interface{}) {
 		},
 		"partial": func(partialName string) (template.HTML, error) {
 			fullPartialName := fmt.Sprintf("%s-%s", partialName, name)
+			if r.TemplateLookup(fullPartialName) == nil && r.opt.RenderPartialsWithoutPrefix {
+				fullPartialName = partialName
+			}
 			if r.opt.RequirePartials || r.TemplateLookup(fullPartialName) != nil {
 				buf, err := r.execute(fullPartialName, binding)
 				// Return safe HTML here since we are rendering our own template.
@@ -323,6 +333,9 @@ func (r *Render) Data(w io.Writer, status int, v []byte) error {
 
 // HTML builds up the response from the specified template and bindings.
 func (r *Render) HTML(w io.Writer, status int, name string, binding interface{}, htmlOpt ...HTMLOptions) error {
+	r.templatesLk.Lock()
+	defer r.templatesLk.Unlock()
+
 	// If we are in development mode, recompile the templates on every HTML request.
 	if r.opt.IsDevelopment {
 		r.compileTemplates()

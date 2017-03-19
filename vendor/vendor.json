@@ -1,0 +1,19 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "Uh5TwAFHd+jFgY1SMx6PaUKZNXY=",
+			"path": "github.com/pressly/chi",
+			"revision": "5b7406a71dbb35d4f59b0b48e68cd9f9256f5262",
+			"revisionTime": "2017-03-18T18:44:54Z"
+		},
+		{
+			"checksumSHA1": "XQ2GsdTmZgUO2xycRg02vxBYi50=",
+			"path": "github.com/unrolled/render",
+			"revision": "50716a0a853771bb36bfce61a45cdefdb98c2e6e",
+			"revisionTime": "2017-01-09T14:32:44Z"
+		}
+	],
+	"rootPath": "github.com/dongri/api-client"
+}
