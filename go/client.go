@@ -21,6 +21,23 @@ const (
 	PATCH  HTTPMethod = "PATCH"
 )
 
+// ContentType ...
+type ContentType string
+
+// ContentType ...
+const (
+	ContentTypeMultipart  ContentType = "multipart-form-data"
+	ContentTypeUrlencoded ContentType = "application/x-www-form-urlencoded"
+	ContentTypeJSON       ContentType = "application/json"
+	ContentTypeXML        ContentType = "application/xml"
+	ContentTypeBase64     ContentType = "application/base64"
+	ContentTypeStream     ContentType = "application/octet-stream"
+	ContentTypePlain      ContentType = "text/plain"
+	ContentTypeCss        ContentType = "text/css"
+	ContentTypeHtml       ContentType = "text/html"
+	ContentTypeJavascript ContentType = "application/javascript"
+)
+
 // Client Struct
 type Client struct {
 	BaseURI string

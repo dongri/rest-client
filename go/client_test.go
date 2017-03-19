@@ -5,8 +5,10 @@ import (
 	"testing"
 )
 
-const timeout = 90 //second
-const endpoint = "http://localhost:8080"
+const (
+	endpoint = "https://yourserver.herokuapp.com"
+	timeout  = 90 //Second
+)
 
 func TestGet(t *testing.T) {
 	client := NewClient(endpoint, nil, timeout)
@@ -28,7 +30,7 @@ func TestGet(t *testing.T) {
 
 func TestPost(t *testing.T) {
 	header := map[string][]string{
-		"Content-Type": {"application/x-www-form-urlencoded"},
+		"Content-Type": {string(ContentTypeUrlencoded)},
 	}
 	client := NewClient(endpoint, header, timeout)
 	params := map[string][]string{
@@ -49,7 +51,7 @@ func TestPost(t *testing.T) {
 
 func TestPut(t *testing.T) {
 	header := map[string][]string{
-		"Content-Type": {"application/x-www-form-urlencoded"},
+		"Content-Type": {string(ContentTypeUrlencoded)},
 	}
 	client := NewClient(endpoint, header, timeout)
 	params := map[string][]string{

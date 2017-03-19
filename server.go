@@ -23,6 +23,13 @@ func main() {
 
 	r := chi.NewRouter()
 
+	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		output := map[string]string{
+			"name": "yourserver",
+		}
+		renderEngine.JSON(w, http.StatusOK, output)
+	})
+
 	r.Get("/users", func(w http.ResponseWriter, r *http.Request) {
 		output := []interface{}{
 			map[string]string{
