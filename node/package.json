@@ -1,0 +1,9 @@
+{
+  "name": "api-client",
+  "version": "0.0.1",
+  "author": "D",
+  "private": true,
+  "dependencies": {
+    "request": "2.81.0"
+  }
+}
