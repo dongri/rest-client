@@ -55,7 +55,7 @@ func main() {
 		renderEngine.JSON(w, http.StatusCreated, output)
 	})
 
-	r.Put("/users", func(w http.ResponseWriter, r *http.Request) {
+	r.Put("/users/:id", func(w http.ResponseWriter, r *http.Request) {
 		r.ParseForm()
 		name := r.Form.Get("name")
 		email := r.Form.Get("email")

@@ -36,7 +36,7 @@ class ClientTest < Test::Unit::TestCase
       'name' => 'ruby2',
       'email' => 'ruby2@gmail.com'
     }
-    res = client.put("/users", body)
+    res = client.put("/users/1", body)
     assert_equal 200, res.status
     body = JSON.parse(res.body)
     assert_equal "ruby2", body["name"]

@@ -58,7 +58,7 @@ func TestPut(t *testing.T) {
 		"name":  {"dongri"},
 		"email": {"dongri@domain.com"},
 	}
-	res, err := client.Put("/users", params)
+	res, err := client.Put("/users/1", params)
 	if err != nil {
 		t.Errorf("got error %v", err)
 	}

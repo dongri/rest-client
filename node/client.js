@@ -32,7 +32,7 @@ class Client {
       method: method,
       headers: this.headers,
       uri: this.endpoint + path,
-      json: params
+      form: params
     };
     request(options, (error, response, body) => {
       callback(error, response, body)
