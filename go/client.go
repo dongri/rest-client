@@ -1,7 +1,11 @@
 package client
 
 import (
+	"bytes"
+	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	urlpath "path"
@@ -9,95 +13,98 @@ import (
 	"time"
 )
 
-// HTTPMethod ...
-type HTTPMethod string
-
-// HTTPMethod ...
-const (
-	GET    HTTPMethod = "GET"
-	POST   HTTPMethod = "POST"
-	PUT    HTTPMethod = "PUT"
-	DELETE HTTPMethod = "DELETE"
-	PATCH  HTTPMethod = "PATCH"
-)
-
 // ContentType ...
 type ContentType string
 
 // ContentType ...
 const (
-	ContentTypeMultipart  ContentType = "multipart-form-data"
-	ContentTypeUrlencoded ContentType = "application/x-www-form-urlencoded"
-	ContentTypeJSON       ContentType = "application/json"
-	ContentTypeXML        ContentType = "application/xml"
-	ContentTypeBase64     ContentType = "application/base64"
-	ContentTypeStream     ContentType = "application/octet-stream"
-	ContentTypePlain      ContentType = "text/plain"
-	ContentTypeCss        ContentType = "text/css"
-	ContentTypeHtml       ContentType = "text/html"
-	ContentTypeJavascript ContentType = "application/javascript"
+	ContentTypeFormUrlencoded ContentType = "application/x-www-form-urlencoded"
+	ContentTypeJSON           ContentType = "application/json"
 )
 
 // Client Struct
 type Client struct {
-	BaseURI string
-	Header  map[string][]string
-	Timeout int
+	BaseURI     string
+	ContentType ContentType
+	Header      map[string]string
+	Timeout     int
 }
 
 // NewClient ...
-func NewClient(baseURI string, header map[string][]string, timeout int) *Client {
+func NewClient(baseURI string, contentType ContentType, header map[string]string, timeout int) *Client {
 	return &Client{
-		BaseURI: baseURI,
-		Header:  header,
-		Timeout: timeout,
+		BaseURI:     baseURI,
+		ContentType: contentType,
+		Header:      header,
+		Timeout:     timeout,
 	}
 }
 
 // Get request GET.
-func (c *Client) Get(path string, params map[string][]string) (*http.Response, error) {
-	return c.requestWithMethod(GET, path, params)
+func (c *Client) Get(path string, params map[string]string) (*http.Response, error) {
+	return c.requestWithMethod(http.MethodGet, path, params)
 }
 
 // Post request POST.
-func (c *Client) Post(path string, params map[string][]string) (*http.Response, error) {
-	return c.requestWithMethod(POST, path, params)
+func (c *Client) Post(path string, params map[string]string) (*http.Response, error) {
+	return c.requestWithMethod(http.MethodPost, path, params)
 }
 
 // Put request PUT.
-func (c *Client) Put(path string, params map[string][]string) (*http.Response, error) {
-	return c.requestWithMethod(PUT, path, params)
+func (c *Client) Put(path string, params map[string]string) (*http.Response, error) {
+	return c.requestWithMethod(http.MethodPut, path, params)
 }
 
 // Delete request DELETE.
-func (c *Client) Delete(path string, params map[string][]string) (*http.Response, error) {
-	return c.requestWithMethod(DELETE, path, params)
+func (c *Client) Delete(path string, params map[string]string) (*http.Response, error) {
+	return c.requestWithMethod(http.MethodDelete, path, params)
 }
 
 // Patch request PATCH.
-func (c *Client) Patch(path string, params map[string][]string) (*http.Response, error) {
-	return c.requestWithMethod(PATCH, path, params)
+func (c *Client) Patch(path string, params map[string]string) (*http.Response, error) {
+	return c.requestWithMethod(http.MethodPatch, path, params)
 }
 
-func (c *Client) requestWithMethod(method HTTPMethod, path string, params map[string][]string) (*http.Response, error) {
-	vals := url.Values(params)
+func (c *Client) requestWithMethod(method string, path string, params map[string]string) (*http.Response, error) {
+	vals := url.Values{}
+	for k, v := range params {
+		vals.Add(k, v)
+	}
 	switch {
-	case method == GET || method == DELETE:
+	case method == http.MethodGet || method == http.MethodDelete:
 		req, err := http.NewRequest(string(method), c.BaseURI, nil)
 		if err != nil {
 			return nil, err
 		}
 		req.URL.Path = urlpath.Join(req.URL.Path, path)
 		req.URL.RawQuery = vals.Encode()
-		req.Header = c.Header
+		req.Header.Set("Content-Type", string(c.ContentType))
+		for k, v := range c.Header {
+			req.Header.Set(k, v)
+		}
 		return c.do(req)
-	case method == POST || method == PUT:
-		req, err := http.NewRequest(string(method), c.BaseURI, strings.NewReader(vals.Encode()))
+	case method == http.MethodPost || method == http.MethodPut || method == http.MethodPatch:
+		var reader io.Reader
+		if c.ContentType == ContentTypeJSON {
+			s, err := json.Marshal(params)
+			if err != nil {
+				return nil, err
+			}
+			reader = bytes.NewBuffer([]byte(s))
+		} else if c.ContentType == ContentTypeFormUrlencoded {
+			reader = strings.NewReader(vals.Encode())
+		} else {
+			return nil, errors.New("content-type error")
+		}
+		req, err := http.NewRequest(string(method), c.BaseURI, reader)
 		if err != nil {
 			return nil, err
 		}
 		req.URL.Path = urlpath.Join(req.URL.Path, path)
-		req.Header = c.Header
+		req.Header.Set("Content-Type", string(c.ContentType))
+		for k, v := range c.Header {
+			req.Header.Set(k, v)
+		}
 		return c.do(req)
 	default:
 		return nil, fmt.Errorf("Unsupport method: %v", method)
