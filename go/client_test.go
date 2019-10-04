@@ -6,16 +6,17 @@ import (
 )
 
 const (
-	endpoint = "https://yourserver.herokuapp.com"
+	// endpoint = "https://yourserver.herokuapp.com"
+	endpoint = "http://localhost:8080"
 	timeout  = 90 //Second
 )
 
 func TestGet(t *testing.T) {
-	client := NewClient(endpoint, nil, timeout)
-	params := map[string][]string{
-		"page": {"1"},
+	client := NewClient(endpoint, ContentTypeJSON, nil, timeout)
+	params := map[string]string{
+		"name": "dongri",
 	}
-	res, err := client.Get("/users", params)
+	res, err := client.Get("/", params)
 	if err != nil {
 		t.Errorf("got error %v", err)
 	}
@@ -28,16 +29,35 @@ func TestGet(t *testing.T) {
 	t.Log(resBody)
 }
 
-func TestPost(t *testing.T) {
-	header := map[string][]string{
-		"Content-Type": {string(ContentTypeUrlencoded)},
+func TestPostForm(t *testing.T) {
+	header := map[string]string{
+		"X-AccessToken": "hoge",
 	}
-	client := NewClient(endpoint, header, timeout)
-	params := map[string][]string{
-		"name":  {"dongri"},
-		"email": {"dongri@domain.com"},
+	client := NewClient(endpoint, ContentTypeFormUrlencoded, header, timeout)
+	params := map[string]string{
+		"name": "dongri",
 	}
-	res, err := client.Post("/users", params)
+	res, err := client.Post("/", params)
+	if err != nil {
+		t.Errorf("got error %v", err)
+	}
+	defer res.Body.Close()
+	var resBody interface{}
+	if err := json.NewDecoder(res.Body).Decode(&resBody); err != nil {
+		t.Errorf("got error %v", err)
+	}
+	t.Log(resBody)
+}
+
+func TestPostJSON(t *testing.T) {
+	header := map[string]string{
+		"X-AccessToken": "hoge",
+	}
+	client := NewClient(endpoint, ContentTypeJSON, header, timeout)
+	params := map[string]string{
+		"name": "dongri",
+	}
+	res, err := client.Post("/", params)
 	if err != nil {
 		t.Errorf("got error %v", err)
 	}
@@ -50,15 +70,14 @@ func TestPost(t *testing.T) {
 }
 
 func TestPut(t *testing.T) {
-	header := map[string][]string{
-		"Content-Type": {string(ContentTypeUrlencoded)},
+	header := map[string]string{
+		"X-AccessToken": "hoge",
 	}
-	client := NewClient(endpoint, header, timeout)
-	params := map[string][]string{
-		"name":  {"dongri"},
-		"email": {"dongri@domain.com"},
+	client := NewClient(endpoint, ContentTypeFormUrlencoded, header, timeout)
+	params := map[string]string{
+		"name": "dongri",
 	}
-	res, err := client.Put("/users/1", params)
+	res, err := client.Put("/", params)
 	if err != nil {
 		t.Errorf("got error %v", err)
 	}
@@ -71,9 +90,11 @@ func TestPut(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	client := NewClient(endpoint, nil, timeout)
-	params := map[string][]string{}
-	res, err := client.Delete("/users/1", params)
+	client := NewClient(endpoint, ContentTypeJSON, nil, timeout)
+	params := map[string]string{
+		"name": "donri",
+	}
+	res, err := client.Delete("/", params)
 	if err != nil {
 		t.Errorf("got error %v", err)
 	}
