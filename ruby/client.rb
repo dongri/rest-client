@@ -37,25 +37,29 @@ class Client
       request = Net::HTTP::Get.new(full_path)
     when :post then
       request = Net::HTTP::Post.new(path)
-      # request.set_form_data(params)
     when :put then
       request = Net::HTTP::Put.new(path)
-      # request.set_form_data(params)
     when :delete then
       full_path = path_with_params(path, params)
-      request = Net::HTTP::Get.new(full_path)
+      request = Net::HTTP::Delete.new(full_path)
     when :patch then
       request = Net::HTTP::Patch.new(path)
-      # request.set_form_data(params)
     end
+    type_json = false
     for header in @headers do
       request.add_field(header[0], header[1])
-      # if header[0] == "Content-Type" && header[1] == "application/json"
-        # request.body = params.to_json
-      # end 
+      if header[0] == "Content-Type" && header[1] == "application/json"
+        type_json = true
+      end
     end
-    request.set_form_data(params)
-    # request.body = params.to_json
+    case method
+    when :post, :put, :patch then
+      if type_json
+        request.body = params.to_json
+      else
+        request.set_form_data(params)
+      end
+    end
     response = @http.request(request)
     return response
   end

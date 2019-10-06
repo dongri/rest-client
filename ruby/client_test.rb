@@ -29,7 +29,6 @@ class ClientTest < Test::Unit::TestCase
       "name" => "dongri"
     }
     res = client.post("/", params)
-    puts res
     assert_equal "200", res.code
     body = JSON.parse(res.body)
     puts body
@@ -69,7 +68,7 @@ class ClientTest < Test::Unit::TestCase
     }
     client = Client.new(@@endpoint, headers)
     params = {
-      "name" => "hdofhdsaofhdsoafhdsoahfdsoafhdoa",
+      "name" => "dongri",
     }
     res = client.post("/", params)
     assert_equal "200", res.code
