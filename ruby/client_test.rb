@@ -3,50 +3,78 @@ require './client.rb'
 
 class ClientTest < Test::Unit::TestCase
 
-  @@endpoint ='https://yourserver.herokuapp.com'
+  # @@endpoint ='https://yourserver.herokuapp.com'
+  @@endpoint ='http://localhost:8080'
 
   def test_get
-    client = Client.new(@@endpoint, nil)
-    res = client.get("/users", nil)
-    assert_equal 200, res.status
+    headers = {
+      "Content-Type" => "application/x-www-form-urlencoded"
+    }
+    client = Client.new(@@endpoint, headers)
+    params = {
+      "name" => "dongri"
+    }
+    res = client.get("/", params)
+    assert_equal "200", res.code
     body = JSON.parse(res.body)
-    assert_equal 2, body.length
+    puts body
   end
 
   def test_post
-    extheader = {
-      "Accept-Charset" => "UTF-8",
-      "Content-Type" => "application/x-www-form-urlencoded; charset=UTF-8"
+    headers = {
+      "Content-Type" => "application/x-www-form-urlencoded"
     }
-    client = Client.new(@@endpoint, extheader)
-    body = {
-      'name' => 'ruby',
-      'email' => 'ruby@gmail.com'
+    client = Client.new(@@endpoint, headers)
+    params = {
+      "name" => "dongri"
     }
-    res = client.post("/users", body)
-    assert_equal 201, res.status
+    res = client.post("/", params)
+    puts res
+    assert_equal "200", res.code
     body = JSON.parse(res.body)
-    assert_equal "ruby", body["name"]
-    assert_equal "ruby@gmail.com", body["email"]
+    puts body
   end
 
   def test_put
-    client = Client.new(@@endpoint, nil)
-    body = {
-      'name' => 'ruby2',
-      'email' => 'ruby2@gmail.com'
+    headers = {
+      "Content-Type" => "application/x-www-form-urlencoded"
     }
-    res = client.put("/users/1", body)
-    assert_equal 200, res.status
+    client = Client.new(@@endpoint, headers)
+    params = {
+      "name" => "dongri",
+    }
+    res = client.put("/", params)
+    assert_equal "200", res.code
     body = JSON.parse(res.body)
-    assert_equal "ruby2", body["name"]
-    assert_equal "ruby2@gmail.com", body["email"]
+    puts body
   end
 
   def test_delete
-    client = Client.new(@@endpoint, nil)
-    res = client.delete("/users/1", nil)
-    assert_equal 200, res.status
+    headers = {
+      "Content-Type" => "application/x-www-form-urlencoded"
+    }
+    client = Client.new(@@endpoint, headers)
+    params = {
+      "name" => "dongri",
+    }
+    res = client.delete("/", params)
+    assert_equal "200", res.code
+    body = JSON.parse(res.body)
+    puts body
+  end
+
+  def test_post_json
+    headers = {
+      "Content-Type" => "application/json"
+    }
+    client = Client.new(@@endpoint, headers)
+    params = {
+      "name" => "hdofhdsaofhdsoafhdsoahfdsoafhdoa",
+    }
+    res = client.post("/", params)
+    assert_equal "200", res.code
+    body = JSON.parse(res.body)
+    puts body
   end
 
 end
