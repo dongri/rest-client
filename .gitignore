@@ -26,3 +26,5 @@ _testmain.go
 node_modules
 
 __pycache__
+
+target
