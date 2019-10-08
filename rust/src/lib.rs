@@ -13,7 +13,7 @@ pub struct Client {
 
 impl Client {
     
-    fn new(base_url: &'static str, headers: HashMap<&'static str, &'static str>) -> Client {
+    pub fn new(base_url: &'static str, headers: HashMap<&'static str, &'static str>) -> Client {
         Client {
             client: reqwest::Client::new(),
             base_url: base_url,
@@ -21,23 +21,23 @@ impl Client {
         }
     }
 
-    fn get(&self, path: &'static str, params: HashMap<&str, &str>) -> Result<(), String> {
+    pub fn get(&self, path: &'static str, params: HashMap<&str, &str>) -> Result<String, String> {
         self.send("GET", path, params)
     }
 
-    fn post(&self, path: &'static str, params: HashMap<&str, &str>) -> Result<(), String> {
+    pub fn post(&self, path: &'static str, params: HashMap<&str, &str>) -> Result<String, String> {
         self.send("POST", path, params)
     }
 
-    fn put(&self, path: &'static str, params: HashMap<&str, &str>) -> Result<(), String> {
+    pub fn put(&self, path: &'static str, params: HashMap<&str, &str>) -> Result<String, String> {
         self.send("PUT", path, params)
     }
 
-    fn delete(&self, path: &'static str, params: HashMap<&str, &str>) -> Result<(), String> {
+    pub fn delete(&self, path: &'static str, params: HashMap<&str, &str>) -> Result<String, String> {
         self.send("DELETE", path, params)
     }
 
-    fn patch(&self, path: &'static str, params: HashMap<&str, &str>) -> Result<(), String> {
+    pub fn patch(&self, path: &'static str, params: HashMap<&str, &str>) -> Result<String, String> {
         self.send("PATCH", path, params)
     }
 
@@ -54,7 +54,7 @@ impl Client {
         header_map
     }
 
-    fn send(&self, method: &str, path: &'static str, params: HashMap<&str, &str>) -> Result<(), String> {
+    fn send(&self, method: &str, path: &'static str, params: HashMap<&str, &str>) -> Result<String, String> {
         let client = reqwest::Client::new();
         let headers = self.construct_headers();
         let mut builder: RequestBuilder;
@@ -84,32 +84,29 @@ impl Client {
                 return Err("method error".to_string());
             }
         }
-
-        let content_type = headers.get(CONTENT_TYPE).unwrap();
-        if content_type == HeaderValue::from_static("application/json") {
-            builder = builder.json(&params);
-        }
-
+        match headers.get(CONTENT_TYPE) {
+            Some(content_type) => {
+                if content_type == HeaderValue::from_static("application/json") {
+                    builder = builder.json(&params);
+                }
+            },
+            None => {}
+        };
         builder = builder.headers(headers);
-
         let mut res = builder.send().unwrap();
-
         if res.status() != StatusCode::OK {
             match res.error_for_status() {
-                Err(text) => {
-                    return Err(text.to_string());
+                Err(err) => {
+                    return Err(err.to_string());
                 }
-                Ok(_) => {
-                    return Ok(());
+                Ok(res) => {
+                    return Err(res.status().to_string());
                 }
             }
         }
         let mut buf = String::new();
-        res.read_to_string(&mut buf)
-            .expect("Failed to read response");
-        println!("{}", buf);
-
-        return Ok(());
+        res.read_to_string(&mut buf).expect("Failed to read response");
+        return Ok(buf);
     }
 
     fn string_to_static_str(s: String) -> &'static str {
@@ -121,70 +118,108 @@ impl Client {
 mod tests {
     use super::*;
 
+    const BASE_URL: &'static str = "http://localhost:8080";
+
     #[test]
     fn get() {
         let mut headers = HashMap::new();
         headers.insert("Content-Type", "application/json");
-        let client = Client::new("http://localhost:8080", headers);
+        let client = Client::new(BASE_URL, headers);
         let mut params = HashMap::new();
         params.insert("name", "dongri");
-        client.get("/", params).unwrap();
-        // assert_eq!(e.encode_word("abc def".to_string()), "=?UTF-8?Q?abc_def?=");
+        match client.get("/", params) {
+            Ok(body) => {
+                println!("Body: {:?}", body);
+            },
+            Err(err) => {
+                println!("Error: {:?}", err);
+            }
+        }
     }
 
     #[test]
     fn post() {
         let mut headers = HashMap::new();
         headers.insert("Content-Type", "application/x-www-form-urlencoded");
-        let client = Client::new("http://localhost:8080", headers);
+        let client = Client::new(BASE_URL, headers);
         let mut params = HashMap::new();
         params.insert("name", "dongri");
-        client.post("/", params).unwrap();
-        // assert_eq!(e.encode_word("abc def".to_string()), "=?UTF-8?Q?abc_def?=");
-    }
-
-    #[test]
-    fn post_json() {
-        let mut headers = HashMap::new();
-        headers.insert("Content-Type", "application/json");
-        let client = Client::new("http://localhost:8080", headers);
-        let mut params = HashMap::new();
-        params.insert("name", "dongri");
-        client.put("/", params).unwrap();
-        // assert_eq!(e.encode_word("abc def".to_string()), "=?UTF-8?Q?abc_def?=");
+        match client.post("/", params) {
+            Ok(body) => {
+                println!("Body: {:?}", body);
+            },
+            Err(err) => {
+                println!("Error: {:?}", err);
+            }
+        }
     }
 
     #[test]
     fn put() {
         let mut headers = HashMap::new();
         headers.insert("Content-Type", "application/x-www-form-urlencoded");
-        let client = Client::new("http://localhost:8080", headers);
+        let client = Client::new(BASE_URL, headers);
         let mut params = HashMap::new();
         params.insert("name", "dongri");
-        client.put("/", params).unwrap();
-        // assert_eq!(e.encode_word("abc def".to_string()), "=?UTF-8?Q?abc_def?=");
+        match client.put("/", params) {
+            Ok(body) => {
+                println!("Body: {:?}", body);
+            },
+            Err(err) => {
+                println!("Error: {:?}", err);
+            }
+        }
     }
 
     #[test]
     fn delete() {
         let mut headers = HashMap::new();
         headers.insert("Content-Type", "application/x-www-form-urlencoded");
-        let client = Client::new("http://localhost:8080", headers);
+        let client = Client::new(BASE_URL, headers);
         let mut params = HashMap::new();
         params.insert("name", "dongri");
-        client.delete("/", params).unwrap();
-        // assert_eq!(e.encode_word("abc def".to_string()), "=?UTF-8?Q?abc_def?=");
+        match client.delete("/", params) {
+            Ok(body) => {
+                println!("Body: {:?}", body);
+            },
+            Err(err) => {
+                println!("Error: {:?}", err);
+            }
+        }
     }
 
     #[test]
     fn patch() {
         let mut headers = HashMap::new();
         headers.insert("Content-Type", "application/x-www-form-urlencoded");
-        let client = Client::new("http://localhost:8080", headers);
+        let client = Client::new(BASE_URL, headers);
         let mut params = HashMap::new();
         params.insert("name", "dongri");
-        client.patch("/", params).unwrap();
-        // assert_eq!(e.encode_word("abc def".to_string()), "=?UTF-8?Q?abc_def?=");
+        match client.patch("/", params) {
+            Ok(body) => {
+                println!("Body: {:?}", body);
+            },
+            Err(err) => {
+                println!("Error: {:?}", err);
+            }
+        }
+    }
+
+    #[test]
+    fn json() {
+        let mut headers = HashMap::new();
+        headers.insert("Content-Type", "application/json");
+        let client = Client::new(BASE_URL, headers);
+        let mut params = HashMap::new();
+        params.insert("name", "dongri");
+        match client.post("/", params) {
+            Ok(body) => {
+                println!("Body: {:?}", body);
+            },
+            Err(err) => {
+                println!("Error: {:?}", err);
+            }
+        }
     }
 
 }
