@@ -12,9 +12,9 @@ import (
 
 // Ping ...
 type Ping struct {
-	Method      string
-	ContentType string
-	Name        string
+	Method      string `json:"method"`
+	ContentType string `json:"content-type"`
+	Name        string `json:"name"`
 }
 
 func main() {
