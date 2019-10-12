@@ -3,11 +3,14 @@ from client import Client
 
 class TestClient(unittest.TestCase):
 
+  endpoint = "https://yourserver.herokuapp.com"
+  # endpoint = 'http://localhost:8080'
+
   def test_get(self):
     headers = {
       'Content-Type': 'application/json'
     }
-    client = Client('http://localhost:8080', headers)
+    client = Client(self.endpoint, headers)
     params = {
       'name': 'dongri'
     }
@@ -18,7 +21,7 @@ class TestClient(unittest.TestCase):
     headers = {
       'Content-Type': 'application/x-www-form-urlencoded'
     }
-    client = Client('http://localhost:8080', headers)
+    client = Client(self.endpoint, headers)
     params = {
         'name': 'dongri'
     }
@@ -29,7 +32,7 @@ class TestClient(unittest.TestCase):
     headers = {
         'Content-Type': 'application/json'
     }
-    client = Client('http://localhost:8080', headers)
+    client = Client(self.endpoint, headers)
     params = {
         'name': 'dongri'
     }
@@ -40,7 +43,7 @@ class TestClient(unittest.TestCase):
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded'
     }
-    client = Client('http://localhost:8080', headers)
+    client = Client(self.endpoint, headers)
     params = {
         'name': 'dongri'
     }
@@ -52,7 +55,7 @@ class TestClient(unittest.TestCase):
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded'
     }
-    client = Client('http://localhost:8080', headers)
+    client = Client(self.endpoint, headers)
     params = {
         'name': 'dongri'
     }
@@ -63,7 +66,7 @@ class TestClient(unittest.TestCase):
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded'
     }
-    client = Client('http://localhost:8080', headers)
+    client = Client(self.endpoint, headers)
     params = {
         'name': 'dongri'
     }

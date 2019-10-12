@@ -118,7 +118,8 @@ impl Client {
 mod tests {
     use super::*;
 
-    const BASE_URL: &'static str = "http://localhost:8080";
+    const BASE_URL: &'static str = "https://yourserver.herokuapp.com";
+    // const BASE_URL: &'static str = "http://localhost:8080";
 
     #[test]
     fn get() {

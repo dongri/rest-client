@@ -25,7 +25,7 @@ func main() {
 	}
 	http.HandleFunc("/", handler)
 	fmt.Printf("Server listening on port %s.\n", port)
-	http.ListenAndServe("localhost:"+port, nil)
+	http.ListenAndServe(":"+port, nil)
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {

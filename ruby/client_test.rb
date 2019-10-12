@@ -3,8 +3,8 @@ require './client.rb'
 
 class ClientTest < Test::Unit::TestCase
 
-  # @@endpoint ='https://yourserver.herokuapp.com'
-  @@endpoint ='http://localhost:8080'
+  @@endpoint ='https://yourserver.herokuapp.com'
+  # @@endpoint ='http://localhost:8080'
 
   def test_get
     headers = {

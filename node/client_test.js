@@ -1,8 +1,8 @@
 const assert = require('assert');
 const Client = require('./client.js');
 
-// let endpoint = "https://yourserver.herokuapp.com";
-let endpoint = "http://localhost:8080";
+let endpoint = "https://yourserver.herokuapp.com";
+// let endpoint = "http://localhost:8080";
 
 var headers = {
   "Content-Type": "application/x-www-form-urlencoded"

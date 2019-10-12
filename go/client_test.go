@@ -6,9 +6,9 @@ import (
 )
 
 const (
-	// endpoint = "https://yourserver.herokuapp.com"
-	endpoint = "http://localhost:8080"
-	timeout  = 90 //Second
+	endpoint = "https://yourserver.herokuapp.com"
+	// endpoint = "http://localhost:8080"
+	timeout = 90 //Second
 )
 
 func TestGet(t *testing.T) {
