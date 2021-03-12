@@ -13,10 +13,10 @@ const (
 
 func TestGet(t *testing.T) {
 	client := NewClient(endpoint, ContentTypeJSON, nil, timeout)
-	params := map[string]string{
+	query := map[string]string{
 		"name": "dongri",
 	}
-	res, err := client.Get("/", params)
+	res, err := client.Get("/", query, nil)
 	if err != nil {
 		t.Errorf("got error %v", err)
 	}
@@ -37,7 +37,7 @@ func TestPostForm(t *testing.T) {
 	params := map[string]string{
 		"name": "dongri",
 	}
-	res, err := client.Post("/", params)
+	res, err := client.Post("/", nil, params)
 	if err != nil {
 		t.Errorf("got error %v", err)
 	}
@@ -57,7 +57,7 @@ func TestPostJSON(t *testing.T) {
 	params := map[string]string{
 		"name": "dongri",
 	}
-	res, err := client.Post("/", params)
+	res, err := client.Post("/", nil, params)
 	if err != nil {
 		t.Errorf("got error %v", err)
 	}
@@ -77,7 +77,7 @@ func TestPut(t *testing.T) {
 	params := map[string]string{
 		"name": "dongri",
 	}
-	res, err := client.Put("/", params)
+	res, err := client.Put("/", nil, params)
 	if err != nil {
 		t.Errorf("got error %v", err)
 	}
@@ -94,7 +94,7 @@ func TestDelete(t *testing.T) {
 	params := map[string]string{
 		"name": "donri",
 	}
-	res, err := client.Delete("/", params)
+	res, err := client.Delete("/", nil, params)
 	if err != nil {
 		t.Errorf("got error %v", err)
 	}
