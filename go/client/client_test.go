@@ -7,7 +7,7 @@ import (
 
 const (
 	endpoint = "https://yourserver.herokuapp.com"
-	// endpoint = "http://localhost:8080"
+	// endpoint = "http://localhost:3000"
 	timeout = 90 //Second
 )
 
